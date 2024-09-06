@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة دعم القراءة والكتابة</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>منصة دعم القراءة والكتابة</h1>
+        <p class="subheader">منصة لتطوير مهارات القراءة والكتابة باستخدام التكنولوجيا</p>
+    </header>
+
+    <main>
+        <!-- Teacher Input Section -->
+        <section id="teacher-section" class="card">
+            <h2>إدخال الكلمات من المعلم</h2>
+            <p>أدخل الكلمات التي تريد من الطالب التدرب عليها:</p>
+            <textarea id="teacherWords" rows="4" placeholder="اكتب الكلمات هنا..."></textarea>
+            <button id="saveWords" class="primary-btn">حفظ الكلمات</button>
+            <p id="savedWordsDisplay">الكلمات المحفوظة: <span id="savedWords"></span></p>
+        </section>
+
+        <!-- Reading Section -->
+        <section id="reading-section" class="card">
+            <h2>تحليل القراءة بالصوت</h2>
+            <p>اضغط على الزر أدناه لبدء القراءة بصوت عالٍ والحصول على تغذية راجعة حول طلاقة القراءة.</p>
+            <button id="startReading" class="primary-btn">ابدأ القراءة</button>
+            <p id="readingFeedback"></p>
+        </section>
+
+        <!-- Writing Section -->
+        <section id="writing-section" class="card">
+            <h2>التعرف على الخط اليدوي</h2>
+            <p>قم بتحميل صورة من كتابتك اليدوية للحصول على ملاحظات حول الخط والإملاء.</p>
+            <input type="file" id="uploadImage" accept="image/*">
+            <img id="handwritingPreview" src="" alt="معاينة الكتابة اليدوية" style="display: none;">
+            <p id="writingFeedback"></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 منصة دعم القراءة والكتابة</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
