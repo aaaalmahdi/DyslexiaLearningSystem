@@ -1,13 +1,14 @@
 /* General Styles */
 body {
     font-family: 'Tajawal', sans-serif;
-    background-color: #f4f4f9;
+    background-color: #f0f4f9;  /* Softer background color */
     margin: 0;
     padding: 0;
     direction: rtl;
     text-align: right;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     min-height: 100vh;
     color: #333;
 }
@@ -21,12 +22,12 @@ header {
 }
 
 h1 {
-    font-size: 2.5em;
+    font-size: 2.5rem;
     margin: 0;
 }
 
 .subheader {
-    font-size: 1.2em;
+    font-size: 1.2rem;
     margin-top: 0.5em;
     color: #c7bff4;
 }
@@ -37,6 +38,7 @@ main {
     padding: 2em;
     max-width: 1000px;
     margin: 0 auto;
+    display: block;
 }
 
 /* Card Layout for Sections */
@@ -44,8 +46,8 @@ main {
     background-color: white;
     border-radius: 15px;
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
-    padding: 30px;  /* Add more padding inside the card */
-    margin-bottom: 30px;  /* Space between cards */
+    padding: 30px;
+    margin-bottom: 30px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -54,16 +56,28 @@ main {
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
 }
 
+/* Section Header with Icon */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.icon {
+    font-size: 2rem;
+}
+
+/* Responsive Font Sizes */
 h2 {
-    font-size: 1.8em;
+    font-size: 1.8rem;
     color: #6200ea;
-    margin-bottom: 15px;  /* Space below headings */
+    margin-bottom: 15px;
 }
 
 p {
-    font-size: 1.1em;
+    font-size: 1rem;
     line-height: 1.7;
-    margin-bottom: 20px;  /* Margin below text */
+    margin-bottom: 20px;
 }
 
 /* Button Styling */
@@ -74,24 +88,30 @@ p {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1.1em;
+    font-size: 1.1rem;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     margin-top: 15px;
 }
 
-.primary-btn:hover {
+.primary-btn:hover, .primary-btn:focus {
     background-color: #3700b3;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+}
+
+.primary-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
 }
 
 /* Input Styling */
 textarea, input[type="file"] {
-    width: calc(100% - 40px);  /* Ensure textboxes are smaller than card padding */
+    width: calc(100% - 40px);
     padding: 12px;
     border: 2px solid #ccc;
     border-radius: 8px;
-    font-size: 1.1em;
-    margin: 15px 20px;  /* Add margins inside the card to prevent interaction */
+    font-size: 1.1rem;
+    margin: 15px 20px;
     transition: border-color 0.3s ease;
 }
 
@@ -100,11 +120,117 @@ textarea:focus, input[type="file"]:focus {
     outline: none;
 }
 
-/* Feedback Styling */
-#readingFeedback, #writingFeedback {
+/* Feedback Section Styling */
+.feedback-container {
     margin-top: 20px;
     font-style: italic;
     color: #6200ea;
+    display: flex;
+    flex-direction: column;
+}
+
+.feedback-container p {
+    margin-right: 10px;
+}
+
+/* Icon Styling */
+#readingIcons, #writingIcons {
+    display: flex;
+    gap: 10px;
+}
+
+.feedback-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.correct-icon {
+    color: green;
+}
+
+.incorrect-icon {
+    color: red;
+}
+
+/* Progress Bar Styling */
+.progress-bar {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 25px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-bar-fill {
+    height: 12px;
+    background-color: #6200ea;
+    width: 0%;
+    transition: width 0.4s ease-in-out;
+}
+
+/* Responsive Layout for Multiple Screens */
+
+/* Flex layout for medium screens (tablets) */
+@media (min-width: 601px) and (max-width: 1024px) {
+    main {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+/* Grid layout for larger screens */
+@media (min-width: 1025px) {
+    main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 20px;
+    }
+
+    .card {
+        margin-bottom: 0;
+    }
+
+    /* Larger buttons and text for bigger screens */
+    .primary-btn {
+        padding: 15px 30px;
+    }
+
+    .icon {
+        font-size: 3rem;
+    }
+
+    h2 {
+        font-size: 2.2rem;
+    }
+}
+
+/* Compact layout for small screens (mobiles) */
+@media (max-width: 600px) {
+    main {
+        display: block;
+        padding: 15px;
+    }
+
+    .card {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    /* Full-width buttons on mobile */
+    .primary-btn {
+        width: 100%;
+        font-size: 1rem;
+        padding: 12px 20px;
+    }
+
+    .icon {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
 }
 
 /* Footer Styling */
@@ -113,37 +239,5 @@ footer {
     padding: 1.5em 0;
     background-color: #6200ea;
     color: white;
-    position: relative;
-    bottom: 0;
     width: 100%;
-}
-
-footer p {
-    margin: 0;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 600px) {
-    h1 {
-        font-size: 2em;
-    }
-
-    h2 {
-        font-size: 1.5em;
-    }
-
-    .primary-btn {
-        font-size: 0.9em;
-    }
-
-    .card {
-        padding: 25px;
-        margin-bottom: 20px;
-    }
-
-    textarea, input[type="file"] {
-        width: calc(100% - 30px);  /* Adjust width for smaller screens */
-        padding: 12px;
-        margin: 10px 15px;
-    }
 }

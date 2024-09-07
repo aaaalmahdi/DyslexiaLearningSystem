@@ -17,28 +17,51 @@
     <main>
         <!-- Teacher Input Section -->
         <section id="teacher-section" class="card">
-            <h2>إدخال الكلمات من المعلم</h2>
+            <div class="section-header">
+                <h2>إدخال الكلمات من المعلم</h2>
+                <span class="icon">✍️</span>
+            </div>
             <p>أدخل الكلمات التي تريد من الطالب التدرب عليها:</p>
             <textarea id="teacherWords" rows="4" placeholder="اكتب الكلمات هنا..."></textarea>
             <button id="saveWords" class="primary-btn">حفظ الكلمات</button>
-            <p id="savedWordsDisplay">الكلمات المحفوظة: <span id="savedWords"></span></p>
+            <p id="savedWordsDisplay" style="display: none;">الكلمات المحفوظة: <span id="savedWords"></span></p>
         </section>
 
         <!-- Reading Section -->
         <section id="reading-section" class="card">
-            <h2>تحليل القراءة بالصوت</h2>
+            <div class="section-header">
+                <h2>تحليل القراءة بالصوت</h2>
+                <span class="icon">🗣️</span>
+            </div>
             <p>اضغط على الزر أدناه لبدء القراءة بصوت عالٍ والحصول على تغذية راجعة حول طلاقة القراءة.</p>
             <button id="startReading" class="primary-btn">ابدأ القراءة</button>
-            <p id="readingFeedback"></p>
+            <div id="readingFeedback" class="feedback-container">
+                <p id="readingFeedbackText"></p>
+                <div id="readingIcons"></div>
+                <!-- Progress Bar -->
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="readingProgressBar"></div>
+                </div>
+            </div>
         </section>
 
         <!-- Writing Section -->
         <section id="writing-section" class="card">
-            <h2>التعرف على الخط اليدوي</h2>
+            <div class="section-header">
+                <h2>التعرف على الخط اليدوي</h2>
+                <span class="icon">📝</span>
+            </div>
             <p>قم بتحميل صورة من كتابتك اليدوية للحصول على ملاحظات حول الخط والإملاء.</p>
             <input type="file" id="uploadImage" accept="image/*">
-            <img id="handwritingPreview" src="" alt="معاينة الكتابة اليدوية" style="display: none;">
-            <p id="writingFeedback"></p>
+            <img id="handwritingPreview" src="" alt="معاينة الكتابة اليدوية" style="display: none; max-width: 100%; height: auto;">
+            <div id="writingFeedback" class="feedback-container">
+                <p id="writingFeedbackText"></p>
+                <div id="writingIcons"></div>
+                <!-- Progress Bar -->
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="writingProgressBar"></div>
+                </div>
+            </div>
         </section>
     </main>
 
