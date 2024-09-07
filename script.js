@@ -27,7 +27,6 @@ function analyzePronunciation(transcript, words) {
         }
     });
 
-    // Update progress bar
     const progressPercentage = (correctCount / words.length) * 100;
     document.getElementById('readingProgressBar').style.width = progressPercentage + '%';
 
@@ -42,10 +41,10 @@ function addFeedbackIcon(container, symbol, className) {
     container.appendChild(icon);
 }
 
-// Initialize speech recognition for Arabic
+// Speech recognition setup
 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-recognition.lang = 'ar-SA';  // Set correct Arabic dialect
-recognition.interimResults = true; // Allow interim results for continuous feedback
+recognition.lang = 'ar-SA';
+recognition.interimResults = true;
 
 document.getElementById('startReading').addEventListener('click', function () {
     let readingFeedbackText = document.getElementById('readingFeedbackText');
@@ -70,11 +69,66 @@ document.getElementById('startReading').addEventListener('click', function () {
     };
 });
 
-// Function to give detailed handwriting feedback with icons
+// Image preprocessing for handwriting recognition
+document.getElementById('uploadImage').addEventListener('change', function (event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    const imagePreview = document.getElementById('handwritingPreview');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const writingFeedbackText = document.getElementById('writingFeedbackText');
+
+    reader.onload = function () {
+        const img = new Image();
+        img.src = reader.result;
+        img.onload = function () {
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // Draw image onto canvas
+            ctx.drawImage(img, 0, 0);
+
+            // Convert to grayscale
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                data[i] = data[i + 1] = data[i + 2] = avg;
+            }
+            ctx.putImageData(imageData, 0, 0);
+
+            imagePreview.src = canvas.toDataURL();
+            imagePreview.style.display = "block";
+            writingFeedbackText.textContent = "جارٍ تحليل الخط...";
+
+            Tesseract.recognize(canvas.toDataURL(), 'ara', {
+                logger: function (m) { console.log(m); }
+            }).then(function (result) {
+                const recognizedText = result.data.text;
+                writingFeedbackText.textContent = "النص المكتوب: " + recognizedText;
+
+                const incorrectWords = savedWords.filter(word => !recognizedText.includes(word));
+                if (incorrectWords.length === 0) {
+                    writingFeedbackText.textContent += "\nخطك واضح! كتبت جميع الكلمات بشكل صحيح.";
+                } else {
+                    writingFeedbackText.textContent += "\nالكلمات التالية تحتاج إلى تحسين: \n" + analyzeHandwriting(recognizedText, incorrectWords);
+                }
+            }).catch(function (error) {
+                writingFeedbackText.textContent = "حدث خطأ أثناء التعرف على الكتابة: " + error.message;
+            });
+        };
+    };
+
+    if (file) {
+        reader.readAsDataURL(file);
+    }
+});
+
+// Function to analyze handwriting
 function analyzeHandwriting(recognizedText, words) {
     let feedback = "";
     const writingIcons = document.getElementById('writingIcons');
-    writingIcons.innerHTML = ''; // Clear previous icons
+    writingIcons.innerHTML = '';
 
     let correctCount = 0;
 
@@ -88,48 +142,8 @@ function analyzeHandwriting(recognizedText, words) {
         }
     });
 
-    // Update progress bar
     const progressPercentage = (correctCount / words.length) * 100;
     document.getElementById('writingProgressBar').style.width = progressPercentage + '%';
 
     return feedback;
 }
-
-// Handle image upload and use OCR for handwriting recognition
-document.getElementById('uploadImage').addEventListener('change', function (event) {
-    let file = event.target.files[0];
-    let reader = new FileReader();
-    let imagePreview = document.getElementById('handwritingPreview');
-    let writingFeedbackText = document.getElementById('writingFeedbackText');
-
-    reader.onload = function () {
-        imagePreview.src = reader.result;
-        imagePreview.style.display = "block";
-
-        writingFeedbackText.textContent = "جارٍ تحليل الخط...";
-
-        Tesseract.recognize(
-            reader.result,
-            'ara',  // Arabic language code
-            {
-                logger: function (m) { console.log(m); }  // Log progress in the console
-            }
-        ).then(function (result) {
-            const recognizedText = result.data.text;
-            writingFeedbackText.textContent = "النص المكتوب: " + recognizedText;
-
-            const incorrectWords = savedWords.filter(word => !recognizedText.includes(word));
-            if (incorrectWords.length === 0) {
-                writingFeedbackText.textContent += "\nخطك واضح! كتبت جميع الكلمات بشكل صحيح.";
-            } else {
-                writingFeedbackText.textContent += "\nالكلمات التالية تحتاج إلى تحسين: \n" + analyzeHandwriting(recognizedText, incorrectWords);
-            }
-        }).catch(function (error) {
-            writingFeedbackText.textContent = "حدث خطأ أثناء التعرف على الكتابة: " + error.message;
-        });
-    };
-
-    if (file) {
-        reader.readAsDataURL(file);
-    }
-});

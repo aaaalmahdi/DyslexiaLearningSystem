@@ -38,7 +38,6 @@
             <div id="readingFeedback" class="feedback-container">
                 <p id="readingFeedbackText"></p>
                 <div id="readingIcons"></div>
-                <!-- Progress Bar -->
                 <div class="progress-bar">
                     <div class="progress-bar-fill" id="readingProgressBar"></div>
                 </div>
@@ -53,11 +52,11 @@
             </div>
             <p>قم بتحميل صورة من كتابتك اليدوية للحصول على ملاحظات حول الخط والإملاء.</p>
             <input type="file" id="uploadImage" accept="image/*">
+            <canvas id="canvas" style="display: none;"></canvas>
             <img id="handwritingPreview" src="" alt="معاينة الكتابة اليدوية" style="display: none; max-width: 100%; height: auto;">
             <div id="writingFeedback" class="feedback-container">
                 <p id="writingFeedbackText"></p>
                 <div id="writingIcons"></div>
-                <!-- Progress Bar -->
                 <div class="progress-bar">
                     <div class="progress-bar-fill" id="writingProgressBar"></div>
                 </div>
