@@ -87,20 +87,18 @@ document.getElementById('uploadImage').addEventListener('change', function (even
             // Draw image onto canvas
             ctx.drawImage(img, 0, 0);
 
-            // Grayscale conversion
+            // Apply Data Augmentation
             let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            let data = imageData.data;
-            for (let i = 0; i < data.length; i += 4) {
-                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                data[i] = data[i + 1] = data[i + 2] = avg;
-            }
-            ctx.putImageData(imageData, 0, 0);
+            imageData = applyDataAugmentation(imageData); // Data Augmentation step
+
+            // Grayscale conversion
+            imageData = convertToGrayscale(imageData);
 
             // Apply Gaussian Blur for noise reduction
             const blurredImage = applyGaussianBlur(ctx, imageData);
             ctx.putImageData(blurredImage, 0, 0);
 
-            // Adaptive Thresholding for binarization
+            // Apply Adaptive Thresholding for binarization
             const thresholdedData = applyAdaptiveThresholding(blurredImage);
             ctx.putImageData(thresholdedData, 0, 0);
 
@@ -131,6 +129,39 @@ document.getElementById('uploadImage').addEventListener('change', function (even
     }
 });
 
+// Data Augmentation: Adds rotation, scaling, and noise to image
+function applyDataAugmentation(imageData) {
+    const ctx = canvas.getContext('2d');
+
+    // Rotate the image slightly to introduce variability
+    const rotationAngle = (Math.random() - 0.5) * 0.1;  // ±5 degrees
+    ctx.rotate(rotationAngle);
+
+    // Apply slight scaling
+    const scaleFactor = 1 + (Math.random() - 0.5) * 0.1;  // ±10% scaling
+    ctx.scale(scaleFactor, scaleFactor);
+
+    // Add noise to the image
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        const noise = (Math.random() - 0.5) * 20;  // ±20 for noise
+        data[i] += noise;
+        data[i + 1] += noise;
+        data[i + 2] += noise;
+    }
+    return imageData;
+}
+
+// Convert image to grayscale
+function convertToGrayscale(imageData) {
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        data[i] = data[i + 1] = data[i + 2] = avg;
+    }
+    return imageData;
+}
+
 // Gaussian Blur for noise reduction
 function applyGaussianBlur(ctx, imageData) {
     const kernel = [1/16, 1/8, 1/16, 1/8, 1/4, 1/8, 1/16, 1/8, 1/16];
@@ -157,16 +188,16 @@ function applyGaussianBlur(ctx, imageData) {
 
 // Adaptive Thresholding for better binarization
 function applyAdaptiveThresholding(imageData) {
-    let data = imageData.data;
+    const data = imageData.data;
     const width = imageData.width;
     const height = imageData.height;
-    
+
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-            let pixelIndex = (y * width + x) * 4;
+            const pixelIndex = (y * width + x) * 4;
             const brightness = data[pixelIndex];
-            const localMean = getLocalMean(data, width, height, x, y, 3);  // 3x3 neighborhood
-            const threshold = localMean - 5;  // Adjust threshold for better binarization
+            const localMean = getLocalMean(data, width, height, x, y, 3);
+            const threshold = localMean - 5;
             data[pixelIndex] = data[pixelIndex + 1] = data[pixelIndex + 2] = brightness > threshold ? 255 : 0;
         }
     }
@@ -178,7 +209,7 @@ function getLocalMean(data, width, height, x, y, neighborhoodSize) {
     let sum = 0;
     let count = 0;
     const offset = Math.floor(neighborhoodSize / 2);
-    
+
     for (let dy = -offset; dy <= offset; dy++) {
         for (let dx = -offset; dx <= offset; dx++) {
             const nx = x + dx;
