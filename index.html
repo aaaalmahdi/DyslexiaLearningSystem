@@ -11,29 +11,27 @@
 <body>
     <header>
         <h1>منصة دعم القراءة والكتابة</h1>
-        <p class="subheader">منصة لتطوير مهارات القراءة والكتابة باستخدام التكنولوجيا</p>
+        <p class="subheader">تعزيز مهارات القراءة والكتابة بخط اليد باستخدام الذكاء الاصطناعي</p>
     </header>
 
     <main>
-        <!-- Teacher Input Section -->
         <section id="teacher-section" class="card">
             <div class="section-header">
                 <h2>إدخال الكلمات من المعلم</h2>
                 <span class="icon">✍️</span>
             </div>
             <p>أدخل الكلمات التي تريد من الطالب التدرب عليها:</p>
-            <textarea id="teacherWords" rows="4" placeholder="اكتب الكلمات هنا..."></textarea>
+            <textarea id="teacherWords" rows="4" placeholder="اكتب الكلمات هنا..." class="input-box"></textarea>
             <button id="saveWords" class="primary-btn">حفظ الكلمات</button>
-            <p id="savedWordsDisplay" style="display: none;">الكلمات المحفوظة: <span id="savedWords"></span></p>
+            <p id="savedWordsDisplay" class="saved-words" style="display: none;">الكلمات المحفوظة: <span id="savedWords"></span></p>
         </section>
 
-        <!-- Reading Section -->
         <section id="reading-section" class="card">
             <div class="section-header">
                 <h2>تحليل القراءة بالصوت</h2>
                 <span class="icon">🗣️</span>
             </div>
-            <p>اضغط على الزر أدناه لبدء القراءة بصوت عالٍ والحصول على تغذية راجعة حول طلاقة القراءة.</p>
+            <p>اضغط على الزر أدناه لبدء القراءة بصوت عالٍ.</p>
             <button id="startReading" class="primary-btn">ابدأ القراءة</button>
             <div id="readingFeedback" class="feedback-container">
                 <p id="readingFeedbackText"></p>
@@ -44,14 +42,13 @@
             </div>
         </section>
 
-        <!-- Writing Section -->
         <section id="writing-section" class="card">
             <div class="section-header">
                 <h2>التعرف على الخط اليدوي</h2>
                 <span class="icon">📝</span>
             </div>
             <p>قم بتحميل صورة من كتابتك اليدوية للحصول على ملاحظات حول الخط والإملاء.</p>
-            <input type="file" id="uploadImage" accept="image/*">
+            <input type="file" id="uploadImage" accept="image/*" class="upload-btn">
             <canvas id="canvas" style="display: none;"></canvas>
             <img id="handwritingPreview" src="" alt="معاينة الكتابة اليدوية" style="display: none; max-width: 100%; height: auto;">
             <div id="writingFeedback" class="feedback-container">
@@ -60,6 +57,9 @@
                 <div class="progress-bar">
                     <div class="progress-bar-fill" id="writingProgressBar"></div>
                 </div>
+                <canvas id="letterTraceCanvas" style="display: none;"></canvas>
+                <div id="dropZone" class="drop-zone">قم بسحب الصورة هنا</div>
+                <div id="letterMistakes"></div>
             </div>
         </section>
     </main>

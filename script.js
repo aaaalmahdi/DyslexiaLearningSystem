@@ -73,7 +73,6 @@ document.getElementById('startReading').addEventListener('click', function () {
 document.getElementById('uploadImage').addEventListener('change', function (event) {
     const file = event.target.files[0];
     const reader = new FileReader();
-    const imagePreview = document.getElementById('handwritingPreview');
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const writingFeedbackText = document.getElementById('writingFeedbackText');
@@ -88,7 +87,7 @@ document.getElementById('uploadImage').addEventListener('change', function (even
             // Draw image onto canvas
             ctx.drawImage(img, 0, 0);
 
-            // Convert to grayscale
+            // Grayscale conversion
             let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             let data = imageData.data;
             for (let i = 0; i < data.length; i += 4) {
@@ -97,11 +96,18 @@ document.getElementById('uploadImage').addEventListener('change', function (even
             }
             ctx.putImageData(imageData, 0, 0);
 
-            imagePreview.src = canvas.toDataURL();
-            imagePreview.style.display = "block";
-            writingFeedbackText.textContent = "جارٍ تحليل الخط...";
+            // Apply Gaussian Blur for noise reduction
+            const blurredImage = applyGaussianBlur(ctx, imageData);
+            ctx.putImageData(blurredImage, 0, 0);
 
+            // Adaptive Thresholding for binarization
+            const thresholdedData = applyAdaptiveThresholding(blurredImage);
+            ctx.putImageData(thresholdedData, 0, 0);
+
+            // Recognizing the text using Tesseract.js
             Tesseract.recognize(canvas.toDataURL(), 'ara', {
+                tessedit_char_whitelist: 'ابتثجحخدذرزسشصضطظعغفقكلمنهويأإآؤءئةًٌٍَُِّْ',
+                psm: 6,  // Single block of text
                 logger: function (m) { console.log(m); }
             }).then(function (result) {
                 const recognizedText = result.data.text;
@@ -112,6 +118,7 @@ document.getElementById('uploadImage').addEventListener('change', function (even
                     writingFeedbackText.textContent += "\nخطك واضح! كتبت جميع الكلمات بشكل صحيح.";
                 } else {
                     writingFeedbackText.textContent += "\nالكلمات التالية تحتاج إلى تحسين: \n" + analyzeHandwriting(recognizedText, incorrectWords);
+                    incorrectWords.forEach(word => drawTraceLetter(word));
                 }
             }).catch(function (error) {
                 writingFeedbackText.textContent = "حدث خطأ أثناء التعرف على الكتابة: " + error.message;
@@ -124,6 +131,68 @@ document.getElementById('uploadImage').addEventListener('change', function (even
     }
 });
 
+// Gaussian Blur for noise reduction
+function applyGaussianBlur(ctx, imageData) {
+    const kernel = [1/16, 1/8, 1/16, 1/8, 1/4, 1/8, 1/16, 1/8, 1/16];
+    const data = imageData.data;
+    const width = imageData.width;
+    const height = imageData.height;
+
+    for (let y = 1; y < height - 1; y++) {
+        for (let x = 1; x < width - 1; x++) {
+            let pixelIndex = (y * width + x) * 4;
+            let sum = 0;
+            for (let ky = -1; ky <= 1; ky++) {
+                for (let kx = -1; kx <= 1; kx++) {
+                    const i = ((y + ky) * width + (x + kx)) * 4;
+                    sum += data[i] * kernel[(ky + 1) * 3 + (kx + 1)];
+                }
+            }
+            data[pixelIndex] = data[pixelIndex + 1] = data[pixelIndex + 2] = sum;
+        }
+    }
+    ctx.putImageData(imageData, 0, 0);
+    return imageData;
+}
+
+// Adaptive Thresholding for better binarization
+function applyAdaptiveThresholding(imageData) {
+    let data = imageData.data;
+    const width = imageData.width;
+    const height = imageData.height;
+    
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            let pixelIndex = (y * width + x) * 4;
+            const brightness = data[pixelIndex];
+            const localMean = getLocalMean(data, width, height, x, y, 3);  // 3x3 neighborhood
+            const threshold = localMean - 5;  // Adjust threshold for better binarization
+            data[pixelIndex] = data[pixelIndex + 1] = data[pixelIndex + 2] = brightness > threshold ? 255 : 0;
+        }
+    }
+    return imageData;
+}
+
+// Function to calculate local mean in a 3x3 neighborhood
+function getLocalMean(data, width, height, x, y, neighborhoodSize) {
+    let sum = 0;
+    let count = 0;
+    const offset = Math.floor(neighborhoodSize / 2);
+    
+    for (let dy = -offset; dy <= offset; dy++) {
+        for (let dx = -offset; dx <= offset; dx++) {
+            const nx = x + dx;
+            const ny = y + dy;
+            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                const index = (ny * width + nx) * 4;
+                sum += data[index];
+                count++;
+            }
+        }
+    }
+    return sum / count;
+}
+
 // Function to analyze handwriting
 function analyzeHandwriting(recognizedText, words) {
     let feedback = "";
@@ -133,10 +202,17 @@ function analyzeHandwriting(recognizedText, words) {
     let correctCount = 0;
 
     words.forEach(word => {
-        if (!recognizedText.includes(word)) {
-            feedback += `كلمة "${word}" غير واضحة. تأكد من كتابة جميع الحروف بشكل واضح ومتصل.\n`;
-            addFeedbackIcon(writingIcons, '❌', 'incorrect-icon');
-        } else {
+        let wordCorrect = true;
+        for (let i = 0; i < word.length; i++) {
+            const char = word[i];
+            if (!recognizedText.includes(char)) {
+                feedback += `الحرف "${char}" في كلمة "${word}" غير واضح.\n`;
+                addFeedbackIcon(writingIcons, '❌', 'incorrect-icon');
+                wordCorrect = false;
+                break;
+            }
+        }
+        if (wordCorrect) {
             correctCount++;
             addFeedbackIcon(writingIcons, '✅', 'correct-icon');
         }
@@ -146,4 +222,16 @@ function analyzeHandwriting(recognizedText, words) {
     document.getElementById('writingProgressBar').style.width = progressPercentage + '%';
 
     return feedback;
+}
+
+// Function to draw traceable letters
+function drawTraceLetter(letter) {
+    const traceCanvas = document.getElementById('letterTraceCanvas');
+    traceCanvas.style.display = "block";
+    const ctx = traceCanvas.getContext('2d');
+    traceCanvas.width = 100;
+    traceCanvas.height = 100;
+    ctx.clearRect(0, 0, traceCanvas.width, traceCanvas.height);
+    ctx.font = '60px Tajawal';
+    ctx.strokeText(letter, 10, 60); // Display the letter to trace
 }

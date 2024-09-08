@@ -1,7 +1,7 @@
 /* General Styles */
 body {
     font-family: 'Tajawal', sans-serif;
-    background-color: #f0f4f9;  /* Softer background color */
+    background-color: #f0f4f9;
     margin: 0;
     padding: 0;
     direction: rtl;
@@ -18,25 +18,28 @@ header {
     background-color: #6200ea;
     color: white;
     text-align: center;
-    padding: 2em 0;
+    padding: 2.5em 0;
+    border-bottom: 3px solid #3700b3;
 }
 
 h1 {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     margin: 0;
+    font-weight: 700;
 }
 
 .subheader {
     font-size: 1.2rem;
     margin-top: 0.5em;
     color: #c7bff4;
+    font-weight: 500;
 }
 
 /* Main Section Styling */
 main {
     flex-grow: 1;
     padding: 2em;
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto;
     display: block;
 }
@@ -44,8 +47,8 @@ main {
 /* Card Layout for Sections */
 .card {
     background-color: white;
-    border-radius: 15px;
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
     padding: 30px;
     margin-bottom: 30px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -53,7 +56,7 @@ main {
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Section Header with Icon */
@@ -64,63 +67,57 @@ main {
 }
 
 .icon {
-    font-size: 2rem;
+    font-size: 2.5rem;
 }
 
-/* Responsive Font Sizes */
-h2 {
-    font-size: 1.8rem;
-    color: #6200ea;
-    margin-bottom: 15px;
+/* Input Styles */
+textarea.input-box {
+    width: calc(100% - 40px);
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    margin: 15px 0;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-p {
-    font-size: 1rem;
-    line-height: 1.7;
-    margin-bottom: 20px;
+textarea.input-box:focus {
+    border-color: #6200ea;
+    outline: none;
+    box-shadow: 0 0 10px rgba(98, 0, 234, 0.3);
 }
 
-/* Button Styling */
+/* Button Styles */
 .primary-btn {
-    padding: 12px 20px;
+    padding: 14px 25px;
     background-color: #6200ea;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    margin-top: 15px;
+    margin-top: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
 .primary-btn:hover, .primary-btn:focus {
     background-color: #3700b3;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
-    transform: translateY(-3px);
+    box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
 }
 
-.primary-btn:active {
-    transform: translateY(0);
-    box-shadow: none;
+/* Saved Words Display */
+.saved-words {
+    margin-top: 15px;
+    color: #444;
+    font-weight: 600;
+    font-size: 1rem;
 }
 
-/* Input Styling */
-textarea, input[type="file"] {
-    width: calc(100% - 40px);
-    padding: 12px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    margin: 15px 20px;
-    transition: border-color 0.3s ease;
-}
-
-textarea:focus, input[type="file"]:focus {
-    border-color: #6200ea;
-    outline: none;
-}
-
-/* Feedback Section Styling */
+/* Feedback Section */
 .feedback-container {
     margin-top: 20px;
     font-style: italic;
@@ -129,8 +126,25 @@ textarea:focus, input[type="file"]:focus {
     flex-direction: column;
 }
 
-.feedback-container p {
-    margin-right: 10px;
+/* Drop Zone Styling */
+.drop-zone {
+    border: 3px dashed #6200ea;
+    padding: 20px;
+    text-align: center;
+    margin: 20px 0;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.drop-zone:hover {
+    background-color: #e8f4ff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.drop-zone.dragging {
+    background-color: #f3e5f5;
 }
 
 /* Icon Styling */
@@ -163,73 +177,22 @@ textarea:focus, input[type="file"]:focus {
 
 .progress-bar-fill {
     height: 12px;
-    background-color: #6200ea;
+    background: linear-gradient(90deg, #6200ea 0%, #3700b3 100%);
     width: 0%;
     transition: width 0.4s ease-in-out;
 }
 
 /* Responsive Layout for Multiple Screens */
-
-/* Flex layout for medium screens (tablets) */
-@media (min-width: 601px) and (max-width: 1024px) {
-    main {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-}
-
-/* Grid layout for larger screens */
-@media (min-width: 1025px) {
-    main {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-gap: 20px;
-    }
-
-    .card {
-        margin-bottom: 0;
-    }
-
-    /* Larger buttons and text for bigger screens */
-    .primary-btn {
-        padding: 15px 30px;
-    }
-
-    .icon {
-        font-size: 3rem;
-    }
-
-    h2 {
-        font-size: 2.2rem;
-    }
-}
-
-/* Compact layout for small screens (mobiles) */
 @media (max-width: 600px) {
-    main {
-        display: block;
-        padding: 15px;
-    }
-
-    .card {
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-
-    /* Full-width buttons on mobile */
-    .primary-btn {
+    .drop-zone {
         width: 100%;
         font-size: 1rem;
-        padding: 12px 20px;
+        padding: 12px;
     }
 
-    .icon {
-        font-size: 1.5rem;
-    }
-
-    h2 {
-        font-size: 1.5rem;
+    #letterTraceCanvas {
+        width: 80px;
+        height: 80px;
     }
 }
 
