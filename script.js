@@ -69,7 +69,7 @@ document.getElementById('startReading').addEventListener('click', function () {
     };
 });
 
-// Image preprocessing for handwriting recognition
+// Image preprocessing for handwriting recognition with enhanced data augmentation
 document.getElementById('uploadImage').addEventListener('change', function (event) {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -87,9 +87,9 @@ document.getElementById('uploadImage').addEventListener('change', function (even
             // Draw image onto canvas
             ctx.drawImage(img, 0, 0);
 
-            // Apply Data Augmentation
+            // Apply enhanced Data Augmentation
             let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            imageData = applyDataAugmentation(imageData); // Data Augmentation step
+            imageData = applyDataAugmentation(imageData); // Aggressive data augmentation
 
             // Grayscale conversion
             imageData = convertToGrayscale(imageData);
@@ -105,7 +105,7 @@ document.getElementById('uploadImage').addEventListener('change', function (even
             // Recognizing the text using Tesseract.js
             Tesseract.recognize(canvas.toDataURL(), 'ara', {
                 tessedit_char_whitelist: 'ابتثجحخدذرزسشصضطظعغفقكلمنهويأإآؤءئةًٌٍَُِّْ',
-                psm: 6,  // Single block of text
+                psm: 7,  // Using single line of text segmentation mode
                 logger: function (m) { console.log(m); }
             }).then(function (result) {
                 const recognizedText = result.data.text;
@@ -129,22 +129,27 @@ document.getElementById('uploadImage').addEventListener('change', function (even
     }
 });
 
-// Data Augmentation: Adds rotation, scaling, and noise to image
+// Enhanced Data Augmentation: Adds rotation, scaling, shearing, and more noise
 function applyDataAugmentation(imageData) {
     const ctx = canvas.getContext('2d');
 
-    // Rotate the image slightly to introduce variability
-    const rotationAngle = (Math.random() - 0.5) * 0.1;  // ±5 degrees
+    // Randomly rotate between -20 to +20 degrees
+    const rotationAngle = (Math.random() - 0.5) * 0.7;  // ±20 degrees
     ctx.rotate(rotationAngle);
 
-    // Apply slight scaling
-    const scaleFactor = 1 + (Math.random() - 0.5) * 0.1;  // ±10% scaling
+    // Apply more aggressive scaling
+    const scaleFactor = 1 + (Math.random() - 0.5) * 0.3;  // ±30% scaling
     ctx.scale(scaleFactor, scaleFactor);
 
-    // Add noise to the image
+    // Apply shearing
+    const shearFactorX = (Math.random() - 0.5) * 0.2;  // ±20% shear
+    const shearFactorY = (Math.random() - 0.5) * 0.2;  // ±20% shear
+    ctx.transform(1, shearFactorY, shearFactorX, 1, 0, 0);
+
+    // Add realistic noise
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
-        const noise = (Math.random() - 0.5) * 20;  // ±20 for noise
+        const noise = (Math.random() - 0.5) * 40;  // ±40 for realistic noise
         data[i] += noise;
         data[i + 1] += noise;
         data[i + 2] += noise;
